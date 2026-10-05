@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: int_run_windows
+    description: "Start/end timestamp per run, derived from the timeline via LEAD."
+    columns:
+      - name: run_key
+        tests: [not_null, unique]
+      - name: line_id
+        tests: [not_null]
+  - name: int_run_conditions
+    description: "Range-joins run windows to telemetry: mean/stddev/n per (run, telemetry parameter). The machine-condition side of the material-substitution comparison."
+    columns:
+      - name: run_key
+        tests: [not_null]
+      - name: parameter_name
+        tests: [not_null]

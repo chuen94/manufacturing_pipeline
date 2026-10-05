@@ -1,0 +1,8 @@
+factory_telemetry:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # warehouse.duckdb lives at the repo root; dbt runs from transform/
+      path: ../warehouse.duckdb
+      threads: 4

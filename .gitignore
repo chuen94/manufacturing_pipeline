@@ -1,0 +1,19 @@
+# generated warehouse + serving artifacts (rebuilt from the generator)
+warehouse.duckdb
+warehouse.duckdb.wal
+serving/*.parquet
+
+# dbt
+transform/target/
+transform/dbt_packages/
+transform/logs/
+transform/.user.yml
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# secrets - never commit
+.env

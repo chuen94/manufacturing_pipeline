@@ -1,0 +1,35 @@
+name: dbt-ci
+ 
+on:
+  push:
+  pull_request:
+ 
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+ 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+ 
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+ 
+      - name: Generate synthetic source data
+        run: |
+          python generator/generate.py --backfill-days 3
+          python generator/generate_shift_data.py --backfill-days 30
+ 
+      - name: dbt build (run models + run tests)
+        working-directory: transform
+        run: dbt build --profiles-dir .
+ 
+      - name: dbt source freshness
+        working-directory: transform
+        run: dbt source freshness --profiles-dir .
+        continue-on-error: true
+ 
+      - name: Run material-substitution analysis
+        run: python analysis/compare_materials.py

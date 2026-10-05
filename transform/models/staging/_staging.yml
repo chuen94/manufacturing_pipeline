@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: stg_process
+    columns:
+      - name: line_id
+        tests: [not_null]
+      - name: reading_time
+        tests: [not_null]
+      - name: parameter_name
+        tests: [not_null]
+  - name: stg_assembly
+    columns:
+      - name: line_id
+        tests: [not_null]
+      - name: reading_time
+        tests: [not_null]
+      - name: parameter_name
+        tests: [not_null]
+  - name: stg_oee
+    columns:
+      - name: line_id
+        tests: [not_null]
+      - name: reading_time
+        tests: [not_null]
+      - name: parameter_name
+        tests: [not_null]
+  - name: stg_shift_runs
+    columns:
+      - name: run_key
+        tests: [not_null, unique]
+      - name: line_id
+        tests: [not_null]
+  - name: stg_shift_materials
+    columns:
+      - name: run_key
+        tests: [not_null]
+      - name: material_code
+        tests: [not_null]
+  - name: stg_shift_timeline
+    columns:
+      - name: run_key
+        tests: [not_null, unique]

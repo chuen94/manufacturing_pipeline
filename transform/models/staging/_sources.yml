@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: factory
+    schema: main
+    description: >
+      Raw synthetic tables produced by generator/generate.py and
+      generator/generate_shift_data.py. Three telemetry line families with
+      intentionally different sensor schemas, an append-only material
+      assignment log, and a synthetic shift-production-record set (runs /
+      materials / timeline) for the material-substitution analysis.
+    tables:
+      - name: raw_process
+        description: "Process lines (line_01..03). Wide: one column per sensor."
+        loaded_at_field: reading_time
+        freshness:
+          warn_after: {count: 10, period: minute}
+          error_after: {count: 30, period: minute}
+      - name: raw_assembly
+        description: "Assembly lines (line_04..05). Different sensor set."
+        loaded_at_field: reading_time
+        freshness:
+          warn_after: {count: 10, period: minute}
+          error_after: {count: 30, period: minute}
+      - name: raw_oee
+        description: "OEE line (line_06). Different sensor set again."
+        loaded_at_field: reading_time
+        freshness:
+          warn_after: {count: 10, period: minute}
+          error_after: {count: 30, period: minute}
+      - name: raw_material_source
+        description: "Append-only log of source -> material assignments over time."
+      - name: raw_shift_runs
+        description: "One row per production run (line, date, shift, formula) from the synthetic shift-record generator."
+      - name: raw_shift_materials
+        description: "Long: run x material, with blend_pct. One row per material in a run's blend."
+      - name: raw_shift_timeline
+        description: "One row per run marking its start timestamp. Feeds int_run_windows."

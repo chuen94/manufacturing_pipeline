@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: fct_telemetry
+    description: "Long-format plant telemetry, one row per line/reading_time/parameter. Incremental."
+    columns:
+      - name: line_id
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['line_01', 'line_02', 'line_03', 'line_04', 'line_05', 'line_06']
+      - name: reading_time
+        tests: [not_null]
+      - name: parameter_name
+        tests: [not_null]
+      - name: reading_value
+        tests: [not_null]
+
+  - name: dim_material_source
+    description: "SCD2 source->material dimension with valid_from/valid_to ranges."
+    columns:
+      - name: source_id
+        tests: [not_null]
+      - name: material_code
+        tests: [not_null]
+      - name: valid_from
+        tests: [not_null]
+
+  - name: dim_material
+    description: "Material code -> type (resin / reclaim / masterbatch). Only resin/reclaim materials are eligible to be a run's primary material."
+    columns:
+      - name: material_code
+        tests: [not_null, unique]
+
+  - name: fct_run
+    description: "Grain: one production run. Yield/scrap/downtime plus the run's primary material."
+    columns:
+      - name: run_key
+        tests: [not_null, unique]
+      - name: line_id
+        tests: [not_null]
+
+  - name: mart_material_comparison
+    description: "Pooled yield/scrap/downtime by (line, formula, primary_material) -- the input to analysis/compare_materials.py's stratified verdict check."
+    columns:
+      - name: line_id
+        tests: [not_null]
+
+exposures:
+  - name: plant_dashboard
+    type: dashboard
+    maturity: high
+    url: http://localhost:3000
+    description: "Grafana near-real-time plant telemetry dashboard. Reads serving/gold_telemetry.parquet."
+    depends_on:
+      - ref('gold_telemetry')
+    owner:
+      name: Analytics Engineering
+
+  - name: material_comparison_report
+    type: analysis
+    maturity: medium
+    url: https://github.com/chuen94/manufacturing_pipeline/blob/main/analysis/compare_materials.py
+    description: >
+      Statistical comparison of material substitutions (pooled diff,
+      shift-stratified ROBUST/MIXED verdict) -- this repo's Phase 2
+      centerpiece. Demonstrates the method on synthetic data.
+    depends_on:
+      - ref('fct_run')
+    owner:
+      name: Analytics Engineering
